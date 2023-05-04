@@ -2,6 +2,13 @@
 pragma solidity ^0.8.9;
 
 contract Leaderboard {
+    //add constructor to collect address of reward contract when deploying
+    address immutable RewardContractAddress;
+
+    constructor(address _rewardContractAddress) {
+        RewardContractAddress = _rewardContractAddress;
+    }
+
     struct LeaderboardMember {
         uint256 points;
         address member;
@@ -28,7 +35,7 @@ contract Leaderboard {
 
     modifier onlyRewardContract() {
         require(
-            msg.sender == rewardContract,
+            msg.sender == RewardContractAddress,
             "Only the Reward Contract can call this function."
         );
         _;
