@@ -1,5 +1,7 @@
-contract Proposal {
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
 
+contract Proposal {
     struct Proposed {
         string description;
         uint threshold;
@@ -21,16 +23,28 @@ contract Proposal {
     }
 
     function addProposal(string memory _description, uint _threshold) public {
-        require(token.balanceOf(msg.sender) >= _threshold, "Insufficient balance");
+        require(
+            token.balanceOf(msg.sender) >= _threshold,
+            "Insufficient balance"
+        );
         require(_threshold > 0, "Invalid threshold");
 
-        Proposed memory newProposal = Proposed(_description, _threshold, false, true, 1);
+        Proposed memory newProposal = Proposed(
+            _description,
+            _threshold,
+            false,
+            true,
+            1
+        );
         proposals.push(newProposal);
         proposalCount++;
     }
 
     function approveProposal(uint _proposalId) public {
-        require(proposals[_proposalId].active == true, "Proposal is not active");
+        require(
+            proposals[_proposalId].active == true,
+            "Proposal is not active"
+        );
 
         proposals[_proposalId].level++;
         if (proposals[_proposalId].level == proposalLevels) {
@@ -41,5 +55,4 @@ contract Proposal {
     function disableProposal(uint _proposalId) public {
         proposals[_proposalId].active = false;
     }
-
 }

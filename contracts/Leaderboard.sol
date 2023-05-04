@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
+
 contract Leaderboard {
     struct LeaderboardMember {
         uint256 points;
@@ -6,7 +9,10 @@ contract Leaderboard {
 
     LeaderboardMember[5] public topMembers;
 
-    function updateTopMembers(address member, uint256 points) external onlyRewardContract {
+    function updateTopMembers(
+        address member,
+        uint256 points
+    ) external onlyRewardContract {
         if (points <= topMembers[4].points) {
             return;
         }
@@ -21,7 +27,10 @@ contract Leaderboard {
     }
 
     modifier onlyRewardContract() {
-        require(msg.sender == rewardContract, "Only the Reward Contract can call this function.");
+        require(
+            msg.sender == rewardContract,
+            "Only the Reward Contract can call this function."
+        );
         _;
     }
 }

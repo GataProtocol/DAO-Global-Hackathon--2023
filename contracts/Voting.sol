@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
+
 contract Voting {
-    
     struct Vote {
         uint proposalId;
         uint amount;
@@ -20,7 +22,10 @@ contract Voting {
 
     function vote(uint _proposalId, uint _amount) public {
         require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
-        require(token.allowance(msg.sender, address(this)) >= _amount, "Insufficient allowance");
+        require(
+            token.allowance(msg.sender, address(this)) >= _amount,
+            "Insufficient allowance"
+        );
         require(_amount > 0, "Invalid amount");
 
         token.transferFrom(msg.sender, address(this), _amount);
@@ -34,16 +39,21 @@ contract Voting {
     function bet(uint _proposalId, uint _amount) public {
         require(voteCount[msg.sender] > 0, "You must vote to place bets");
         require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
-        require(token.allowance(msg.sender, address(this)) >= _amount, "Insufficient allowance");
+        require(
+            token.allowance(msg.sender, address(this)) >= _amount,
+            "Insufficient allowance"
+        );
         require(_amount > 0, "Invalid amount");
 
         token.transferFrom(msg.sender, address(this), _amount);
         totalBets += _amount;
     }
 
-    function getVote(address _voter, uint _index) public view returns (uint, uint, uint) {
+    function getVote(
+        address _voter,
+        uint _index
+    ) public view returns (uint, uint, uint) {
         Vote memory vote = votes[_voter][_index];
         return (vote.proposalId, vote.amount, vote.time);
     }
-
 }
