@@ -5,16 +5,16 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Voting {
     struct Vote {
-        uint proposalId;
         uint amount;
         uint time;
+        uint totalVotes;
+        uint totalBets;
     }
 
     mapping(address => uint) public voteCount;
-    mapping(address => mapping(uint => Vote)) public votes;
+    mapping(address => uint) public betCount;
 
-    uint public totalVotes;
-    uint public totalBets;
+    mapping(uint => Vote) public votes;
 
     IERC20 public Token;
 
@@ -28,14 +28,14 @@ contract Voting {
             Token.allowance(msg.sender, address(this)) >= _amount,
             "Insufficient allowance"
         );
-        require(_amount > 0, "Invalid amount");
+        require(_amount > votes[_proposalId].amount, "Invalid amount");
 
         Token.transferFrom(msg.sender, address(this), _amount);
 
-        Vote memory newVote = Vote(_proposalId, _amount, block.timestamp);
-        votes[msg.sender][voteCount[msg.sender]] = newVote;
-        voteCount[msg.sender]++;
-        totalVotes += _amount;
+        // Vote memory newVote = Vote(_proposalId, _amount, block.timestamp);
+        // votes[msg.sender][voteCount[msg.sender]] = newVote;
+        voteCount[msg.sender] += _amount;
+        votes[_proposalId].totalVotes += _amount;
     }
 
     function bet(uint _proposalId, uint _amount) public {
@@ -48,14 +48,14 @@ contract Voting {
         require(_amount > 0, "Invalid amount");
 
         Token.transferFrom(msg.sender, address(this), _amount);
-        totalBets += _amount;
+        votes[_proposalId].totalBets += _amount;
     }
 
-    function getVote(
-        address _voter,
-        uint _index
-    ) public view returns (uint, uint, uint) {
-        Vote memory tempVote = votes[_voter][_index];
-        return (tempVote.proposalId, tempVote.amount, tempVote.time);
+    function getVoteCount(address _voter) public view returns (uint) {
+        return voteCount[_voter];
+    }
+
+    function getBetCount(address _voter) public view returns (uint) {
+        return betCount[_voter];
     }
 }
