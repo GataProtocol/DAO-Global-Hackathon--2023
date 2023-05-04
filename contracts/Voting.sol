@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 contract Voting {
     struct Vote {
         uint proposalId;
@@ -14,21 +16,21 @@ contract Voting {
     uint public totalVotes;
     uint public totalBets;
 
-    dCommerceToken public token;
+    IERC20 public Token;
 
     constructor(address _token) {
-        token = dCommerceToken(_token);
+        Token = IERC20(_token);
     }
 
     function vote(uint _proposalId, uint _amount) public {
-        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        require(Token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
         require(
-            token.allowance(msg.sender, address(this)) >= _amount,
+            Token.allowance(msg.sender, address(this)) >= _amount,
             "Insufficient allowance"
         );
         require(_amount > 0, "Invalid amount");
 
-        token.transferFrom(msg.sender, address(this), _amount);
+        Token.transferFrom(msg.sender, address(this), _amount);
 
         Vote memory newVote = Vote(_proposalId, _amount, block.timestamp);
         votes[msg.sender][voteCount[msg.sender]] = newVote;
@@ -38,14 +40,14 @@ contract Voting {
 
     function bet(uint _proposalId, uint _amount) public {
         require(voteCount[msg.sender] > 0, "You must vote to place bets");
-        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        require(Token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
         require(
-            token.allowance(msg.sender, address(this)) >= _amount,
+            Token.allowance(msg.sender, address(this)) >= _amount,
             "Insufficient allowance"
         );
         require(_amount > 0, "Invalid amount");
 
-        token.transferFrom(msg.sender, address(this), _amount);
+        Token.transferFrom(msg.sender, address(this), _amount);
         totalBets += _amount;
     }
 
@@ -53,7 +55,7 @@ contract Voting {
         address _voter,
         uint _index
     ) public view returns (uint, uint, uint) {
-        Vote memory vote = votes[_voter][_index];
-        return (vote.proposalId, vote.amount, vote.time);
+        Vote memory tempVote = votes[_voter][_index];
+        return (tempVote.proposalId, tempVote.amount, tempVote.time);
     }
 }
