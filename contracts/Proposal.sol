@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 contract Proposal {
     struct Proposed {
         string description;
@@ -15,16 +17,16 @@ contract Proposal {
     uint public proposalLevels;
     uint public proposalCount;
 
-    dCommerceToken public token;
+    IERC20 public Token;
 
-    constructor(address _token, uint _proposalLevels) {
-        token = dCommerceToken(_token);
+    constructor(address _tokenAddress, uint _proposalLevels) {
+        Token = IERC20(_tokenAddress);
         proposalLevels = _proposalLevels;
     }
 
     function addProposal(string memory _description, uint _threshold) public {
         require(
-            token.balanceOf(msg.sender) >= _threshold,
+            Token.balanceOf(msg.sender) >= _threshold,
             "Insufficient balance"
         );
         require(_threshold > 0, "Invalid threshold");
