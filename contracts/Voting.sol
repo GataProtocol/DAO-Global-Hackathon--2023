@@ -1,61 +1,81 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.0;
 
 contract Voting {
-    struct Vote {
-        uint amount;
-        uint time;
-        uint totalVotes;
-        uint totalBets;
+    struct Proposal {
+        string name;
+        uint256 voteCount;
+        bool exists;
+        mapping(address => uint256) bets;
     }
 
-    mapping(address => uint) public voteCount;
-    mapping(address => uint) public betCount;
+    address public chairperson;
+    mapping(address => bool) public voters;
+    mapping(address => uint256) public voteCount;
+    mapping(address => mapping(bytes32 => uint256)) public bets;
+    mapping(bytes32 => Proposal) public proposals;
 
-    mapping(uint => Vote) public votes;
+    event ProposalRegistered(bytes32 proposalId, string name);
+    event Voted(address voter, bytes32 proposalId);
+    event Betting(address bettor, bytes32 proposalId, uint256 amount);
+    event VotingClosed();
 
-    IERC20 public Token;
-
-    constructor(address _token) {
-        Token = IERC20(_token);
+    constructor() {
+        chairperson = msg.sender;
     }
 
-    function vote(uint _proposalId, uint _amount) public {
-        require(Token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+    function registerProposal(string memory _name) public {
         require(
-            Token.allowance(msg.sender, address(this)) >= _amount,
-            "Insufficient allowance"
+            msg.sender == chairperson,
+            "Only the chairperson can register proposals."
         );
-        require(_amount > votes[_proposalId].amount, "Invalid amount");
-
-        Token.transferFrom(msg.sender, address(this), _amount);
-
-        // Vote memory newVote = Vote(_proposalId, _amount, block.timestamp);
-        // votes[msg.sender][voteCount[msg.sender]] = newVote;
-        voteCount[msg.sender] += _amount;
-        votes[_proposalId].totalVotes += _amount;
-    }
-
-    function bet(uint _proposalId, uint _amount) public {
-        require(voteCount[msg.sender] > 0, "You must vote to place bets");
-        require(Token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        bytes32 proposalId = keccak256(abi.encodePacked(_name));
         require(
-            Token.allowance(msg.sender, address(this)) >= _amount,
-            "Insufficient allowance"
+            !proposals[proposalId].exists,
+            "This proposal has already been registered."
         );
-        require(_amount > 0, "Invalid amount");
-
-        Token.transferFrom(msg.sender, address(this), _amount);
-        votes[_proposalId].totalBets += _amount;
+        proposals[proposalId].name = _name;
+        proposals[proposalId].exists = true;
+        emit ProposalRegistered(proposalId, _name);
     }
 
-    function getVoteCount(address _voter) public view returns (uint) {
-        return voteCount[_voter];
+    function vote(bytes32 proposalId) public {
+        require(proposals[proposalId].exists, "This proposal does not exist.");
+        require(!voters[msg.sender], "You have already voted.");
+        proposals[proposalId].voteCount += 1;
+        voters[msg.sender] = true;
+        voteCount[msg.sender] += 1;
+        emit Voted(msg.sender, proposalId);
     }
 
-    function getBetCount(address _voter) public view returns (uint) {
-        return betCount[_voter];
+    function bet(bytes32 proposalId) public payable {
+        require(proposals[proposalId].exists, "This proposal does not exist.");
+        require(msg.value > 0, "You must bet at least some ether.");
+        proposals[proposalId].bets[msg.sender] += msg.value;
+        bets[msg.sender][proposalId] += msg.value;
+        emit Betting(msg.sender, proposalId, msg.value);
+    }
+
+    function closeVoting() public {
+        require(
+            msg.sender == chairperson,
+            "Only the chairperson can close voting."
+        );
+        emit VotingClosed();
+    }
+
+    function getProposal(
+        bytes32 _proposalId
+    )
+        public
+        view
+        returns (string memory name, uint256 votesCount, bool exists)
+    {
+        return (
+            proposals[_proposalId].name,
+            proposals[_proposalId].voteCount,
+            proposals[_proposalId].exists
+        );
     }
 }

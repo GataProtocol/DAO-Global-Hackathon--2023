@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+
+pragma solidity ^0.8.0;
 
 interface IMembership {
-    struct Member {
-        uint256 tokenBalance;
-        bool isMember;
-    }
+    function addMember(address member, uint256 level) external;
 
-    function addMember(
-        address _member,
-        uint256 _nftId,
-        uint256 _tokenBalance
-    ) external;
+    function members(address member) external returns (bool, uint);
 
-    function members(address _member) external view returns (uint256, bool);
+    function updateMemberLevel(address member, uint256 level) external;
 
-    function nftToMember(uint256 _nftId) external view returns (address);
+    function getMemberLevel(address member) external view returns (uint256);
 
-    function totalMembers() external view returns (uint256);
+    function memberExists(address member) external view returns (bool);
+
+    function getMembersCount() external view returns (uint256);
+
+    function getMemberDetails(
+        address member
+    ) external view returns (uint256, bool);
 }

@@ -1,60 +1,88 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.0;
+
+import "./interfaces/IVoting.sol";
 
 contract Proposal {
-    struct Proposed {
-        string description;
-        uint threshold;
-        bool accepted;
-        bool active;
-        uint level;
+    IVoting public VotingContract;
+
+    // add Constructor that is used to get address of Voting Contract
+    constructor(address _votingContractAddress) {
+        VotingContract = IVoting(_votingContractAddress);
     }
 
-    Proposed[] public proposals;
+    // Proposal details
+    string public proposalTitle;
+    string public proposalDescription;
+    uint256 public proposalEndTime;
 
-    uint public proposalLevels;
-    uint public proposalCount;
+    // Vote count and state
+    uint256 public yesVotes;
+    uint256 public noVotes;
+    bool public proposalPassed;
 
-    IERC20 public Token;
+    // Event to track proposal creation
+    event ProposalCreated(address proposer, string title);
 
-    constructor(address _tokenAddress, uint _proposalLevels) {
-        Token = IERC20(_tokenAddress);
-        proposalLevels = _proposalLevels;
-    }
+    // Event to track proposal votes
+    event ProposalVoted(address voter, bool support);
 
-    function addProposal(string memory _description, uint _threshold) public {
+    // Modifier to check if proposal has ended
+    modifier proposalHasEnded() {
         require(
-            Token.balanceOf(msg.sender) >= _threshold,
-            "Insufficient balance"
+            block.timestamp > proposalEndTime,
+            "Proposal has not ended yet"
         );
-        require(_threshold > 0, "Invalid threshold");
-
-        Proposed memory newProposal = Proposed(
-            _description,
-            _threshold,
-            false,
-            true,
-            1
-        );
-        proposals.push(newProposal);
-        proposalCount++;
+        _;
     }
 
-    function approveProposal(uint _proposalId) public {
-        require(
-            proposals[_proposalId].active == true,
-            "Proposal is not active"
-        );
+    // Function to create a new proposal
+    function createProposal(
+        string memory _title,
+        string memory _description,
+        uint256 _endTime
+    ) external {
+        // Set the proposal details
+        proposalTitle = _title;
+        proposalDescription = _description;
+        proposalEndTime = _endTime;
 
-        proposals[_proposalId].level++;
-        if (proposals[_proposalId].level == proposalLevels) {
-            proposals[_proposalId].accepted = true;
+        // Emit an event to track proposal creation
+        emit ProposalCreated(msg.sender, _title);
+    }
+
+    // Function to vote on a proposal
+    function vote(bool _support) external {
+        // Get the current voter's address
+        address voter = msg.sender;
+
+        // Check if voter has already voted
+        require(!VotingContract.hasVoted(voter), "Voter has already voted");
+
+        // Update vote count based on vote type
+        if (_support) {
+            yesVotes++;
+        } else {
+            noVotes++;
         }
+
+        // Update voter's vote status
+        VotingContract.setHasVoted(voter, true);
+
+        // Emit an event to track proposal votes
+        emit ProposalVoted(voter, _support);
     }
 
-    function disableProposal(uint _proposalId) public {
-        proposals[_proposalId].active = false;
+    // Function to check if proposal has passed
+    function hasProposalPassed() external proposalHasEnded returns (bool) {
+        // Check if yes votes are more than no votes
+        if (yesVotes > noVotes) {
+            proposalPassed = true;
+        } else {
+            proposalPassed = false;
+        }
+
+        return proposalPassed;
     }
 }

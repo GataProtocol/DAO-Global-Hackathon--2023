@@ -1,27 +1,34 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.0;
 
 interface IVoting {
-    function vote(uint _proposalId, uint _amount) external;
+    struct Proposal {
+        string name;
+        uint256 voteCount;
+        bool exists;
+        mapping(address => uint256) bets;
+    }
 
-    function bet(uint _proposalId, uint _amount) external;
+    event ProposalRegistered(bytes32 proposalId, string name);
+    event Voted(address voter, bytes32 proposalId);
+    event Betting(address bettor, bytes32 proposalId, uint256 amount);
+    event VotingClosed();
 
-    function getVoteCount(address _voter) external view returns (uint);
+    function registerProposal(string memory _name) external;
 
-    function getBetCount(address _voter) external view returns (uint);
+    function vote(bytes32 proposalId) external;
 
-    function Token() external view returns (IERC20);
+    function bet(bytes32 proposalId) external payable;
 
-    function votes(
-        uint
+    function closeVoting() external;
+
+    function voteCount(address member) external returns (uint);
+
+    function getProposal(
+        bytes32 _proposalId
     )
         external
         view
-        returns (uint amount, uint time, uint totalVotes, uint totalBets);
-
-    function voteCount(address) external view returns (uint);
-
-    function betCount(address) external view returns (uint);
+        returns (string memory name, uint256 votesCount, bool exists);
 }
