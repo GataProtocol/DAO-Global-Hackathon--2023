@@ -1,32 +1,56 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+// deploy.js
+const { ethers, upgrades } = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const Token = await ethers.getContractFactory("Token");
+  const Membership = await ethers.getContractFactory("Membership");
+  const Voting = await ethers.getContractFactory("Voting");
+  const Proposal = await ethers.getContractFactory("Proposal");
+  const Rewards = await ethers.getContractFactory("Rewards");
+  const DAO = await ethers.getContractFactory("DAO");
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
-
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  // Deploy Token contract
+  const token = await Token.deploy(
+    "MyToken",
+    "MT",
+    18,
+    ethers.utils.parseEther("1000000")
   );
+  await token.deployed();
+
+  console.log("Token deployed to:", token.address);
+
+  // Deploy Membership contract
+  const membership = await Membership.deploy();
+  await membership.deployed();
+
+  console.log("Membership deployed to:", membership.address);
+
+  // Deploy Voting contract
+  const voting = await Voting.deploy();
+  await voting.deployed();
+
+  console.log("Voting deployed to:", voting.address);
+  const proposal = await Proposal.deploy(voting.address, membership.address);
+  await proposal.deployed();
+  console.log("proposal deployed to:", proposal.address);
+  const rewards = await Rewards.deploy(voting.address, membership.address);
+  await rewards.deployed();
+  console.log("rewards deployed to:", rewards.address);
+  const dao = await DAO.deploy(
+    token.address,
+    membership.address,
+    voting.address,
+    proposal.address,
+    rewards.address
+  );
+  await dao.deployed();
+  console.log("DAO deployed to:", dao.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
