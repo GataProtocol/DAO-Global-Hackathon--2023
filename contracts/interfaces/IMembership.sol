@@ -7,6 +7,8 @@ interface IMembership {
 
     function members(address member) external returns (bool, uint);
 
+    function membersList() external returns (address[] memory);
+
     function updateMemberLevel(address member, uint256 level) external;
 
     function getMemberLevel(address member) external view returns (uint256);

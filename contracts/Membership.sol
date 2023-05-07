@@ -27,9 +27,9 @@ contract Membership {
     }
 
     // Function to update a member's level
-    function updateMemberLevel(address member, uint256 level) external {
+    function updateMemberLevel(address member, uint256 _level) external {
         require(members[member].exists, "Member does not exist");
-        members[member].level = level;
+        members[member].level += _level;
     }
 
     // Function to get a member's level

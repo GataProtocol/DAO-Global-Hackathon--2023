@@ -32,13 +32,16 @@ contract Rewards {
     event LeaderboardChanged(address[] members);
 
     // Function to calculate rewards earned by a member for participating in governance
-    function calculateRewards(address member) internal view returns (uint256) {
+    function calculateRewards(
+        address member,
+        uint256 _proposalId
+    ) internal view returns (uint256) {
         // Get the level of participation
-        (, uint256 level) = MembershipContract.members(member);
+        (uint256 level, ) = MembershipContract.getMemberDetails(member);
 
         // Get the number of votes and bets placed by the member
         uint256 votesPlaced = VotingContract.voteCount(member);
-        uint256 betsPlaced = VotingContract.bets[member];
+        (uint256 betsPlaced, ) = VotingContract.bets(member, _proposalId);
 
         // Calculate the rewards earned by the member
         uint256 rewardsEarned = (votesPlaced + betsPlaced) *
@@ -48,20 +51,20 @@ contract Rewards {
     }
 
     // Function to distribute rewards to all members and update the leaderboard
-    function distributeRewards() external {
+    function distributeRewards(uint256 _proposalId) external {
         address[] memory leaderboard = new address[](
-            MembershipContract.membersCount
+            MembershipContract.getMembersCount()
         );
         uint256[] memory leaderboardScores = new uint256[](
-            MembershipContract.membersCount
+            MembershipContract.getMembersCount()
         );
 
         // Iterate through all members
-        for (uint256 i = 0; i < MembershipContract.membersCount; i++) {
-            address member = MembershipContract.membersList[i];
+        for (uint256 i = 0; i < MembershipContract.getMembersCount(); i++) {
+            address member = MembershipContract.membersList()[i];
 
             // Calculate rewards earned by the member
-            uint256 rewardsEarned = calculateRewards(member);
+            uint256 rewardsEarned = calculateRewards(member, _proposalId);
 
             // Add rewards to the member's balance
             rewards[member] += rewardsEarned;
@@ -95,9 +98,9 @@ contract Rewards {
     }
 
     // Function to claim rewards by a member
-    function claimRewards() external {
+    function claimRewards(uint256 _proposalId) external {
         address member = msg.sender;
-        uint256 rewardsEarned = calculateRewards(member);
+        uint256 rewardsEarned = calculateRewards(member, _proposalId);
         rewards[member] += rewardsEarned;
         emit RewardsEarned(member, rewardsEarned);
     }
