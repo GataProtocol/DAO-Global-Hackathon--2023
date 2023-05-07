@@ -2,46 +2,44 @@
 
 pragma solidity ^0.8.0;
 
-import "./Proposal.sol";
-import "./Voting.sol";
-import "./Membership.sol";
-import "./Rewards.sol";
-import "./Token.sol";
+import "./interfaces/IProposal.sol";
+import "./interfaces/IVoting.sol";
+import "./interfaces/IMembership.sol";
+import "./interfaces/IRewards.sol";
+import "./interfaces/IToken.sol";
 
 contract DAO {
-    Proposal public proposalContract;
-    Voting public votingContract;
-    Membership public membershipContract;
-    Rewards public rewardsContract;
-    Token public tokenContract;
+    IProposal public proposalContract;
+    IVoting public votingContract;
+    IMembership public membershipContract;
+    IRewards public rewardsContract;
+    IToken public tokenContract;
 
     // add Constructor that is used to initialize all the contracts
     constructor(
         // uint256 _proposalDuration,
         // uint256 _voteDuration,
         // uint256 _quorumPercentage,
-        address _tokenAddress
+        address _tokenAddress,
+        address _membershipAddress,
+        address _votingAddress,
+        address _proposalAddress,
+        address _rewardsAddress
     ) {
         // Initialize token contract
-        tokenContract = Token(_tokenAddress);
+        tokenContract = IToken(_tokenAddress);
 
         // Initialize membership contract
-        membershipContract = new Membership();
+        membershipContract = IMembership(_membershipAddress);
 
         // Initialize voting contract
-        votingContract = new Voting();
+        votingContract = IVoting(_votingAddress);
 
         // Initialize proposal contract
-        proposalContract = new Proposal(
-            address(votingContract),
-            address(membershipContract)
-        );
+        proposalContract = IProposal(_proposalAddress);
 
         // Initialize rewards contract
-        rewardsContract = new Rewards(
-            address(votingContract),
-            address(membershipContract)
-        );
+        rewardsContract = IRewards(_rewardsAddress);
     }
 
     // Function to add a member to the DAO
