@@ -1,6 +1,14 @@
-# DAO-Global-Hackathon--2023DAO Smart Contract:
+
+# DAO-Global-Hackathon--2023 DAO Smart Contract:
 
  This is a smart contract that enables Decentralized Autonomous Organization (DAO). It has several smart contracts that interact with each other to facilitate the operations of the DAO. The smart contracts are as follows:
+
+## 🔩 Project Structure
+
+- [Working Frontend](https://governance-dao.vercel.app)
+- [Contracts](./)
+- [FrontendCode](https://github.com/incoknito/GovernanceDAO)
+
 
 ## DAO:
 
@@ -58,3 +66,18 @@ b. distributeRewards - This function is used to distribute rewards to all member
 c. claimRewards - This function is used by a member to claim rewards.
 
 ```Note: The contracts are written in Solidity version 0.8.0. The MIT license is used for the contracts.```
+
+# CHECK OUT THE CONTRACTS AT :
+
+- [Token Contract](https://explorer.testnet.mantle.xyz/address/0xD518510C440214DfcE445155D058F2e14F760961)
+
+- [Membership Contract](https://explorer.testnet.mantle.xyz/address/0x12B1118267385177520426cA8539b5c80a7eDFbf)
+
+- [Voting Contract](https://explorer.testnet.mantle.xyz/address/0xc4Dc827f7c8c5ac854d42592Ea6c92DBBc957F81)
+
+- [Proposal Contract](https://explorer.testnet.mantle.xyz/address/0xA62760BEa985246eF020C8e34f47f5F3A469C943)
+
+- [Rewards Contract](https://explorer.testnet.mantle.xyz/address/0xBDdE80BE987712e0fA3284004EA82CcDA8c58147)
+
+- [Token Contract](https://explorer.testnet.mantle.xyz/address/0xe57A480Edd93381cAAb28249b6966F6E520EA577)
+  
