@@ -9,65 +9,7 @@
 - [Contracts](./)
 - [FrontendCode](https://github.com/incoknito/GovernanceDAO)
 
-
-## DAO:
-
-    This contract contains the main functionality of the DAO. It creates instances of other contracts that facilitate the operations of the DAO. The contracts created include Proposal, Voting, Membership, Rewards and Token contracts. It also has several functions that allow users to interact with the DAO.
-
-### Functions:
-
-a. Constructor - Initializes all the contracts.
-b. addMember - This function is used to add a member to the DAO.
-c. createProposal - This function is used to create a proposal.
-d. vote - This function is used to vote on a proposal.
-e. distributeRewards - This function is used to distribute rewards to all members.
-f. claimRewards - This function is used by a member to claim rewards.
-
-## Membership:
-
-    This contract manages the membership of the DAO. It stores the details of all members, including their level.
-
-### Functions:
-
-a. addMember - This function is used to add a new member to the DAO.
-b. updateMemberLevel - This function is used to update a member's level.
-c. getMemberLevel - This function is used to get a member's level.
-d. memberExists - This function is used to check if a member exists.
-e. getMembersCount - This function is used to get the total number of members.
-f. getMemberDetails - This function is used to get a member's details.
-
-## Proposal:
-
-    This contract manages the creation and voting on proposals. It stores the details of the proposal and the vote count.
-
-### Functions:
-
-a. Constructor - Used to get the address of the Voting Contract.
-b. createProposal - This function is used to create a new proposal.
-c. vote - This function is used to vote on a proposal.
-d. hasProposalPassed - This function is used to check if a proposal has passed.
-
-## Voting:
-
-    This contract manages the voting on proposals. It stores the details of the vote.
-
-### Functions:
-
-a. vote - This function is used to vote on a proposal.
-b. hasVoted - This function is used to check if a user has voted.
-c. setHasVoted - This function is used to set a user's vote status.
-
-## Rewards:
-    This contract manages the distribution of rewards to members. It interacts with the Voting, Membership, and Token contracts.
-
-### Functions:
-a. Constructor - Used to get the addresses of the Voting, Membership, and Token contracts.
-b. distributeRewards - This function is used to distribute rewards to all members.
-c. claimRewards - This function is used by a member to claim rewards.
-
-```Note: The contracts are written in Solidity version 0.8.0. The MIT license is used for the contracts.```
-
-# CHECK OUT THE CONTRACTS AT :
+# CHECK OUT THE CONTRACTS WHICH ARE ALREADY DEPLOYED ON THE MANTLE TESTNET AT:
 
 - [Token Contract](https://explorer.testnet.mantle.xyz/address/0xD518510C440214DfcE445155D058F2e14F760961)
 
@@ -81,3 +23,63 @@ c. claimRewards - This function is used by a member to claim rewards.
 
 - [Token Contract](https://explorer.testnet.mantle.xyz/address/0xe57A480Edd93381cAAb28249b6966F6E520EA577)
   
+
+## DAO:
+
+This contract contains the main functionality of the DAO. It creates instances of other contracts that facilitate the operations of the DAO. The contracts created include Proposal, Voting, Membership, Rewards and Token contracts. It also has several functions that allow users to interact with the DAO.
+
+### Functions:
+
+- Constructor - Initializes all the contracts.
+- addMember - This function is used to add a member to the DAO.
+- createProposal - This function is used to create a proposal.
+- vote - This function is used to vote on a proposal.
+- distributeRewards - This function is used to distribute rewards to all members.
+- claimRewards - This function is used by a member to claim rewards.
+
+## Membership:
+
+This contract manages the membership of the DAO. It stores the details of all members, including their level.
+
+### Functions:
+
+- addMember - This function is used to add a new member to the DAO.
+- updateMemberLevel - This function is used to update a member's level.
+- getMemberLevel - This function is used to get a member's level.
+- memberExists - This function is used to check if a member exists.
+- getMembersCount - This function is used to get the total number of members.
+- getMemberDetails - This function is used to get a member's details.
+
+## Proposal:
+
+This contract manages the creation and voting on proposals. It stores the details of the proposal and the vote count.
+
+### Functions:
+
+- Constructor - Used to get the address of the Voting Contract.
+- createProposal - This function is used to create a new proposal.
+- vote - This function is used to vote on a proposal.
+- hasProposalPassed - This function is used to check if a proposal has passed.
+
+## Voting:
+
+This contract manages the voting on proposals. It stores the details of the vote.
+
+### Functions:
+
+- vote - This function is used to vote on a proposal.
+- hasVoted - This function is used to check if a user has voted.
+- setHasVoted - This function is used to set a user's vote status.
+
+## Rewards:
+
+This contract manages the distribution of rewards to members. It interacts with the Voting, Membership, and Token contracts.
+
+### Functions:
+
+- Constructor - Used to get the addresses of the Voting, Membership, and Token contracts.
+- distributeRewards - This function is used to distribute rewards to all members.
+- claimRewards - This function is used by a member to claim rewards.
+
+```Note: The contracts are written in Solidity version 0.8.0. The MIT license is used for the contracts.```
+
